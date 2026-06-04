@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elegant Music Player</title>
+    <link rel="stylesheet" href="test.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+</head>
+<body>
+
+    <div class="player-container">
+        <div class="search-box">
+            <span class="material-symbols-rounded">search</span>
+            <input type="text" id="search-input" placeholder="曲名やアーティスト名で検索...">
+        </div>
+
+        <div class="main-player">
+            <div class="track-artwork" id="artwork">
+                <span class="material-symbols-rounded">music_note</span>
+            </div>
+            <div class="track-info">
+                <h2 id="track-title">曲を選択してください</h2>
+                <p id="track-artist">---</p>
+            </div>
+        </div>
+
+        <div class="progress-area">
+            <input type="range" id="progress-bar" min="0" max="100" value="0">
+            <div class="time-info">
+                <span id="current-time">0:00</span>
+                <span id="total-duration">0:00</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="prev-btn" class="action-btn">
+                <span class="material-symbols-rounded">skip_previous</span>
+            </button>
+            <button id="play-btn" class="action-btn play-pause">
+                <span class="material-symbols-rounded" id="play-icon">play_arrow</span>
+            </button>
+            <button id="next-btn" class="action-btn">
+                <span class="material-symbols-rounded">skip_next</span>
+            </button>
+        </div>
+
+        <div class="playlist-section">
+            <h3>楽曲ライブラリ</h3>
+            <ul id="playlist">
+                </ul>
+        </div>
+    </div>
+
+    <audio id="audio-element"></audio>
+
+    <script src="test.js"></script>
+</body>
+</html>

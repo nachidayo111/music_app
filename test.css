@@ -1,0 +1,188 @@
+:root {
+    --bg-color: #0f172a;
+    --card-bg: #1e293b;
+    --text-main: #f8fafc;
+    --text-sub: #94a3b8;
+    --accent: #38bdf8;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.player-container {
+    width: 100%;
+    max-width: 390px; /* iPhoneのサイズ感にフィット */
+    background: var(--card-bg);
+    padding: 24px;
+    border-radius: 32px;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+}
+
+/* 検索バー */
+.search-box {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 16px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+}
+
+.search-box span {
+    color: var(--text-sub);
+    margin-right: 8px;
+}
+
+.search-box input {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    width: 100%;
+    font-size: 14px;
+    outline: none;
+}
+
+/* アートワーク */
+.main-player {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.track-artwork {
+    width: 200px;
+    height: 200px;
+    background: linear-gradient(135deg, #334155, #1e293b);
+    margin: 0 auto 20px auto;
+    border-radius: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+.track-artwork span {
+    font-size: 64px;
+    color: var(--accent);
+}
+
+.track-info h2 {
+    font-size: 20px;
+    margin: 0 0 6px 0;
+    font-weight: 600;
+}
+
+.track-info p {
+    font-size: 14px;
+    color: var(--text-sub);
+    margin: 0;
+}
+
+/* 進捗バー */
+.progress-area {
+    margin-bottom: 24px;
+}
+
+.progress-area input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+    cursor: pointer;
+}
+
+.time-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-top: 4px;
+}
+
+/* コントロール */
+.controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 28px;
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    color: var(--text-main);
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.action-btn span {
+    font-size: 32px;
+}
+
+.action-btn:active {
+    transform: scale(0.9);
+}
+
+.play-pause {
+    background: var(--text-main);
+    color: var(--bg-color);
+    border-radius: 50%;
+    padding: 16px;
+}
+
+.play-pause span {
+    font-size: 36px;
+}
+
+/* リスト */
+.playlist-section h3 {
+    font-size: 14px;
+    color: var(--text-sub);
+    margin-bottom: 12px;
+}
+
+#playlist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+#playlist li {
+    padding: 12px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+#playlist li:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+#playlist li.active {
+    background: rgba(56, 189, 248, 0.15);
+    color: var(--accent);
+}
+
+#playlist li .artist-name {
+    font-size: 12px;
+    color: var(--text-sub);
+}
