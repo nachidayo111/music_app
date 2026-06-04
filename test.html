@@ -4,8 +4,201 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Elegant Music Player</title>
-    <link rel="stylesheet" href="test.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" />
+    
+    <style>
+        /* 🎨 CSS（デザイン）をここに統合しました */
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --accent: #38bdf8;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .player-container {
+            width: 100%;
+            max-width: 390px;
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 16px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+
+        .search-box span {
+            color: var(--text-sub);
+            margin-right: 8px;
+        }
+
+        .search-box input {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            width: 100%;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .main-player {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .track-artwork {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, #334155, #1e293b);
+            margin: 0 auto 20px auto;
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .track-artwork span {
+            font-size: 64px;
+            color: var(--accent);
+        }
+
+        .track-info h2 {
+            font-size: 18px;
+            margin: 0 0 6px 0;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .track-info p {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .progress-area {
+            margin-bottom: 24px;
+        }
+
+        .progress-area input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        .time-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 28px;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .action-btn span {
+            font-size: 32px;
+        }
+
+        .action-btn:active {
+            transform: scale(0.9);
+        }
+
+        .play-pause {
+            background: var(--text-main);
+            color: var(--bg-color);
+            border-radius: 50%;
+            padding: 16px;
+        }
+
+        .play-pause span {
+            font-size: 36px;
+        }
+
+        .playlist-section h3 {
+            font-size: 14px;
+            color: var(--text-sub);
+            margin-bottom: 12px;
+        }
+
+        #playlist {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        #playlist li {
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        #playlist li:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        #playlist li.active {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+        }
+
+        #playlist li .artist-name {
+            font-size: 12px;
+            color: var(--text-sub);
+        }
+    </style>
 </head>
 <body>
 
@@ -20,7 +213,7 @@
                 <span class="material-symbols-rounded">music_note</span>
             </div>
             <div class="track-info">
-                <h2 id="track-title">曲を選択してください</h2>
+                <h2 id="track-title">読み込み中...</h2>
                 <p id="track-artist">---</p>
             </div>
         </div>
@@ -47,13 +240,202 @@
 
         <div class="playlist-section">
             <h3>楽曲ライブラリ</h3>
-            <ul id="playlist">
-                </ul>
+            <ul id="playlist"></ul>
         </div>
     </div>
 
     <audio id="audio-element"></audio>
 
-    <script src="test.js"></script>
+    <script>
+        /* 🧠 検索＆プレイヤーロジック（JavaScript）もここに統合しました */
+        let currentTrackIndex = 0;
+        let isPlaying = false;
+        let searchResults = [];
+
+        const audio = document.getElementById("audio-element");
+        const playBtn = document.getElementById("play-btn");
+        const playIcon = document.getElementById("play-icon");
+        const prevBtn = document.getElementById("prev-btn");
+        const nextBtn = document.getElementById("next-btn");
+        const progressBar = document.getElementById("progress-bar");
+        const currentTimeEl = document.getElementById("current-time");
+        const durationTimeEl = document.getElementById("total-duration");
+        const trackTitle = document.getElementById("track-title");
+        const trackArtist = document.getElementById("track-artist");
+        const playlist = document.getElementById("playlist");
+        const searchInput = document.getElementById("search-input");
+
+        // iTunes APIから楽曲を検索
+        async function searchMusic(keyword) {
+            if (!keyword) return;
+            const url = `https://itunes.apple.com/search?term=${encodeURIComponent(keyword)}&country=jp&entity=musicTrack&limit=10`;
+            
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                searchResults = data.results.map((track, index) => ({
+                    id: index,
+                    title: track.trackName,
+                    artist: track.artistName,
+                    url: track.previewUrl,
+                    artwork: track.artworkUrl100.replace('100x100bb', '400x400bb') // 画像を高画質化
+                }));
+                
+                renderPlaylist(searchResults);
+                if (searchResults.length > 0) {
+                    loadTrack(0);
+                }
+            } catch (error) {
+                console.error("検索エラー:", error);
+            }
+        }
+
+        // 入力時のディレイ検索
+        let typingTimer;
+        searchInput.oninput = (e) => {
+            clearTimeout(typingTimer);
+            const keyword = e.target.value;
+            typingTimer = setTimeout(() => {
+                searchMusic(keyword);
+            }, 500);
+        };
+
+        function loadTrack(index) {
+            if (searchResults.length === 0) return;
+            currentTrackIndex = index;
+            const track = searchResults[index];
+            audio.src = track.url;
+            trackTitle.textContent = track.title;
+            trackArtist.textContent = track.artist;
+            
+            const artworkEl = document.getElementById("artwork");
+            if (track.artwork) {
+                artworkEl.innerHTML = `<img src="${track.artwork}" style="width:100%; height:100%; object-fit:cover;">`;
+            } else {
+                artworkEl.innerHTML = `<span class="material-symbols-rounded">music_note</span>`;
+            }
+            
+            updatePlaylistHighlight();
+            updateMediaSessionMetadata(track);
+        }
+
+        function togglePlay() {
+            if (searchResults.length === 0) return;
+            if (isPlaying) {
+                audio.pause();
+            } else {
+                audio.play().catch(err => console.log(err));
+            }
+        }
+
+        audio.onplay = () => {
+            isPlaying = true;
+            playIcon.textContent = "pause";
+            if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
+        };
+
+        audio.onpause = () => {
+            isPlaying = false;
+            playIcon.textContent = "play_arrow";
+            if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "paused";
+        };
+
+        function nextTrack() {
+            if (searchResults.length === 0) return;
+            let index = currentTrackIndex + 1;
+            if (index >= searchResults.length) index = 0;
+            loadTrack(index);
+            audio.play();
+        }
+
+        function prevTrack() {
+            if (searchResults.length === 0) return;
+            let index = currentTrackIndex - 1;
+            if (index < 0) index = searchResults.length - 1;
+            loadTrack(index);
+            audio.play();
+        }
+
+        audio.ontimeupdate = () => {
+            if (audio.duration) {
+                const progress = (audio.currentTime / audio.duration) * 100;
+                progressBar.value = progress;
+                currentTimeEl.textContent = formatTime(audio.currentTime);
+                durationTimeEl.textContent = formatTime(audio.duration);
+            }
+        };
+
+        progressBar.oninput = () => {
+            const seekTime = (progressBar.value / 100) * audio.duration;
+            audio.currentTime = seekTime;
+        };
+
+        audio.onended = () => nextTrack();
+
+        function renderPlaylist(tracks) {
+            playlist.innerHTML = "";
+            tracks.forEach(track => {
+                const li = document.createElement("li");
+                li.dataset.id = track.id;
+                li.innerHTML = `
+                    <div style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-right:10px;">${track.title}</div>
+                    <div class="artist-name" style="max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${track.artist}</div>
+                `;
+                li.onclick = () => {
+                    loadTrack(track.id);
+                    audio.play();
+                };
+                playlist.appendChild(li);
+            });
+            updatePlaylistHighlight();
+        }
+
+        function updatePlaylistHighlight() {
+            const items = playlist.querySelectorAll("li");
+            items.forEach(item => {
+                if (parseInt(item.dataset.id) === currentTrackIndex) {
+                    item.classList.add("active");
+                } else {
+                    item.classList.remove("active");
+                }
+            });
+        }
+
+        function formatTime(secs) {
+            const min = Math.floor(secs / 60);
+            const sec = Math.floor(secs % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        function setupMediaSession() {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.setActionHandler('play', () => togglePlay());
+                navigator.mediaSession.setActionHandler('pause', () => togglePlay());
+                navigator.mediaSession.setActionHandler('previoustrack', () => prevTrack());
+                navigator.mediaSession.setActionHandler('nexttrack', () => nextTrack());
+            }
+        }
+
+        function updateMediaSessionMetadata(track) {
+            if ('mediaSession' in navigator) {
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: track.title,
+                    artist: track.artist,
+                    album: "iTunes Search Player",
+                    artwork: [{ src: track.artwork || 'https://via.placeholder.com/512', sizes: '512x512', type: 'image/png' }]
+                });
+            }
+        }
+
+        playBtn.onclick = togglePlay;
+        nextBtn.onclick = nextTrack;
+        prevBtn.onclick = prevTrack;
+
+        window.onload = () => {
+            setupMediaSession();
+            searchMusic("Vaundy"); // 初期表示として人気の曲を検索しておきます
+        };
+    </script>
 </body>
 </html>
