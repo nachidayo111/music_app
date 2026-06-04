@@ -1,27 +1,6 @@
-// サンプル楽曲データ（著作権フリーのストリーミングURL）
-const songs = [
-    {
-        id: 0,
-        title: "Lost in the City Lights",
-        artist: "Cosmo Sheldrake",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-    },
-    {
-        id: 1,
-        title: "Urban Nocturne",
-        artist: "Nightowl",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
-    },
-    {
-        id: 2,
-        title: "Neon Dreams",
-        artist: "Vaporwave Explorer",
-        url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3"
-    }
-];
-
 let currentTrackIndex = 0;
 let isPlaying = false;
+let searchResults = []; // 検索された曲のリストを入れる空の配列
 
 const audio = document.getElementById("audio-element");
 const playBtn = document.getElementById("play-btn");
@@ -36,97 +15,131 @@ const trackArtist = document.getElementById("track-artist");
 const playlist = document.getElementById("playlist");
 const searchInput = document.getElementById("search-input");
 
-// 初期化
-function init() {
-    loadTrack(currentTrackIndex);
-    renderPlaylist(songs);
-    setupMediaSession();
+// 🎵 iTunes APIから曲を検索する関数
+async function searchMusic(keyword) {
+    if (!keyword) return;
+    
+    // AppleのAPIを叩くURL（日本の楽曲、最大10件取得）
+    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(keyword)}&country=jp&entity=musicTrack&limit=10`;
+    
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        // 必要なデータ（タイトル、歌手名、30秒のプレビューURL）だけを抽出して変換
+        searchResults = data.results.map((track, index) => ({
+            id: index,
+            title: track.trackName,
+            artist: track.artistName,
+            url: track.previewUrl, // 30秒の試聴URL
+            artwork: track.artworkUrl100 // ジャケット画像
+        }));
+        
+        // 検索結果を画面のリストに表示
+        renderPlaylist(searchResults);
+        
+        // 1件目があれば自動でセット
+        if (searchResults.length > 0) {
+            loadTrack(0);
+        }
+    } catch (error) {
+        console.error("音楽の検索に失敗しました:", error);
+    }
 }
 
-// トラック読込
+// 検索バーに入力されたら検索を実行（タイピングが止まってから動くように少しディレイを入れるとより上品になります）
+let typingTimer;
+searchInput.oninput = (e) => {
+    clearTimeout(typingTimer);
+    const keyword = e.target.value;
+    typingTimer = setTimeout(() => {
+        searchMusic(keyword);
+    }, 500); // 文字入力が止まって0.5秒後に検索
+};
+
+// --- 以下は前のプレイヤーロジックを流用・最適化 ---
+
 function loadTrack(index) {
+    if (searchResults.length === 0) return;
     currentTrackIndex = index;
-    const track = songs[index];
+    const track = searchResults[index];
     audio.src = track.url;
     trackTitle.textContent = track.title;
     trackArtist.textContent = track.artist;
+    
+    // アートワーク（ジャケット写真）があれば変更
+    const artworkEl = document.getElementById("artwork");
+    if (track.artwork) {
+        artworkEl.innerHTML = `<img src="${track.artwork}" style="width:100%; height:100%; border-radius:24px; object-fit:cover;">`;
+    } else {
+        artworkEl.innerHTML = `<span class="material-symbols-rounded">music_note</span>`;
+    }
     
     updatePlaylistHighlight();
     updateMediaSessionMetadata(track);
 }
 
-// 再生・一時停止
 function togglePlay() {
+    if (searchResults.length === 0) return;
     if (isPlaying) {
         audio.pause();
     } else {
-        audio.play().catch(err => console.log("ユーザー操作前の自動再生制限:", err));
+        audio.play().catch(err => console.log(err));
     }
 }
 
 audio.onplay = () => {
     isPlaying = true;
     playIcon.textContent = "pause";
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.playbackState = "playing";
-    }
+    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "playing";
 };
 
 audio.onpause = () => {
     isPlaying = false;
     playIcon.textContent = "play_arrow";
-    if ('mediaSession' in navigator) {
-        navigator.mediaSession.playbackState = "paused";
-    }
+    if ('mediaSession' in navigator) navigator.mediaSession.playbackState = "paused";
 };
 
-// 次の曲 / 前の曲
 function nextTrack() {
+    if (searchResults.length === 0) return;
     let index = currentTrackIndex + 1;
-    if (index >= songs.length) index = 0;
+    if (index >= searchResults.length) index = 0;
     loadTrack(index);
     audio.play();
 }
 
 function prevTrack() {
+    if (searchResults.length === 0) return;
     let index = currentTrackIndex - 1;
-    if (index < 0) index = songs.length - 1;
+    if (index < 0) index = searchResults.length - 1;
     loadTrack(index);
     audio.play();
 }
 
-// タイムアップデート
 audio.ontimeupdate = () => {
     if (audio.duration) {
         const progress = (audio.currentTime / audio.duration) * 100;
         progressBar.value = progress;
-        
-        // 時間表示の更新
         currentTimeEl.textContent = formatTime(audio.currentTime);
         durationTimeEl.textContent = formatTime(audio.duration);
     }
 };
 
-// シークバー操作
 progressBar.oninput = () => {
     const seekTime = (progressBar.value / 100) * audio.duration;
     audio.currentTime = seekTime;
 };
 
-// 曲が終わったら次へ
-audio.onended = () => {
-    nextTrack();
-};
+audio.onended = () => nextTrack();
 
-// プレイリスト描画
 function renderPlaylist(tracks) {
     playlist.innerHTML = "";
     tracks.forEach(track => {
         const li = document.createElement("li");
         li.dataset.id = track.id;
         li.innerHTML = `
-            <div>${track.title}</div>
-            <div class="artist-name">${track.artist}</div>
+            <div style="flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding-right:10px;">${track.title}</div>
+            <div class="artist-name" style="max-width:120px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${track.artist}</div>
         `;
         li.onclick = () => {
             loadTrack(track.id);
@@ -148,24 +161,12 @@ function updatePlaylistHighlight() {
     });
 }
 
-// 🔍 検索ロジック
-searchInput.oninput = (e) => {
-    const keyword = e.target.value.toLowerCase();
-    const filteredSongs = songs.filter(song => 
-        song.title.toLowerCase().includes(keyword) || 
-        song.artist.toLowerCase().includes(keyword)
-    );
-    renderPlaylist(filteredSongs);
-};
-
-// 時間フォーマットUtility
 function formatTime(secs) {
     const min = Math.floor(secs / 60);
     const sec = Math.floor(secs % 60);
     return `${min}:${sec < 10 ? '0' : ''}${sec}`;
 }
 
-// 📱 バックグラウンド再生・OSコントロール連携 (Media Session API)
 function setupMediaSession() {
     if ('mediaSession' in navigator) {
         navigator.mediaSession.setActionHandler('play', () => togglePlay());
@@ -180,17 +181,18 @@ function updateMediaSessionMetadata(track) {
         navigator.mediaSession.metadata = new MediaMetadata({
             title: track.title,
             artist: track.artist,
-            album: "Web Elegant Player",
-            artwork: [
-                { src: 'https://via.placeholder.com/512', sizes: '512x512', type: 'image/png' }
-            ]
+            album: "iTunes Search Player",
+            artwork: [{ src: track.artwork || 'https://via.placeholder.com/512', sizes: '512x512', type: 'image/png' }]
         });
     }
 }
 
-// イベント登録
 playBtn.onclick = togglePlay;
 nextBtn.onclick = nextTrack;
 prevBtn.onclick = prevTrack;
 
-window.onload = init;
+window.onload = () => {
+    setupMediaSession();
+    // 最初に「Official髭男dism」などで勝手に検索させて初期表示を作っても面白いです
+    searchMusic("Pretender"); 
+};
